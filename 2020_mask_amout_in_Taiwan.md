@@ -1,4 +1,4 @@
-#Linebot-GAS Query The amount of mask in Taiwan
+## Linebot-GAS Query The amount of mask in Taiwan
 
 1. Create a Line Bot on [LineDeveloper web ](https://developers.line.biz/zh-hant/)
 2. Spreadsheet on [Google Drive](https://drive.google.com)
