@@ -104,7 +104,7 @@ for(var i=2;i<10;i++){
 
 執行記錄:  
 [20-02-08 17:15:46:049 HKT] SpreadsheetApp.Sheet.getRange([1, 2]) [0 秒]  
-[20-02-08 17:15:46:140 HKT] SpreadsheetApp.Range.getValue() `**[0.091 秒]** ` 
+[20-02-08 17:15:46:140 HKT] SpreadsheetApp.Range.getValue() **[0.091 秒]**  
 [20-02-08 17:15:46:149 HKT] console.log([73180.0, []]) [0.003 秒]  
 [20-02-08 17:15:46:233 HKT] SpreadsheetApp.Sheet.getLastRow() [0.083 秒]  
 [20-02-08 17:15:46:233 HKT] SpreadsheetApp.Sheet.getRange([1, 1, 5510, 7]) [0 秒]  
