@@ -100,6 +100,7 @@ for(var i=2;i<10;i++){
         ...
       }
 ```
+```
 執行記錄:
 [20-02-08 17:15:46:049 HKT] SpreadsheetApp.Sheet.getRange([1, 2]) [0 秒]
 [20-02-08 17:15:46:140 HKT] SpreadsheetApp.Range.getValue() [0.091 秒]
@@ -109,3 +110,4 @@ for(var i=2;i<10;i++){
 [20-02-08 17:15:46:829 HKT] SpreadsheetApp.Range.getValues() [0.594 秒]
 ...
 [20-02-08 17:15:47:245 HKT] 執行成功 [總執行時間：1.115 秒]
+```
