@@ -36,8 +36,7 @@
       }
     }
     var mask_LastRow = mask_sheet.getLastRow();
-    var county=userMessage.replace("臺", "台")
-    var county=userMessage;
+    var county=userMessage.replace("台", "臺")
     //var flag=0
 
     var count=0;
@@ -84,3 +83,29 @@
 
   }//doPost(e)
 ```
+
+tricky:
+若使用getValue()來取得欄位值，執行速度會很慢
+getValue()執行一次可能就要耗掉0.091(如下記錄)
+下面記錄是執行取得10筆資料就要耗掉1.115 秒
+因此為了加速,上面程式碼則使用方法是將所有資料一次全部載入到記憶體(array),再執行判斷
+data=mask_sheet.getRange(1, 1, mask_LastRow, 7).getValues();
+資料大約5000筆,只需1秒以內就可以完成搜尋
+
+程式碼如下:
+```
+for(var i=2;i<10;i++){
+      if(mask_sheet.getRange(i,3).getValue().indexOf(county)>-1){
+        replyMessage+=mask_sheet.getRange(i,3).getValue()+"\n";
+        ...
+      }
+```
+執行記錄:
+[20-02-08 17:15:46:049 HKT] SpreadsheetApp.Sheet.getRange([1, 2]) [0 秒]
+[20-02-08 17:15:46:140 HKT] SpreadsheetApp.Range.getValue() [0.091 秒]
+[20-02-08 17:15:46:149 HKT] console.log([73180.0, []]) [0.003 秒]
+[20-02-08 17:15:46:233 HKT] SpreadsheetApp.Sheet.getLastRow() [0.083 秒]
+[20-02-08 17:15:46:233 HKT] SpreadsheetApp.Sheet.getRange([1, 1, 5510, 7]) [0 秒]
+[20-02-08 17:15:46:829 HKT] SpreadsheetApp.Range.getValues() [0.594 秒]
+...
+[20-02-08 17:15:47:245 HKT] 執行成功 [總執行時間：1.115 秒]
