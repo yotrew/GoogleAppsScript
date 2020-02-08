@@ -4,7 +4,7 @@
 2. Spreadsheet on [Google Drive](https://drive.google.com)
    This Spreadsheet has two Sheet, one's name is "口罩", another name is "記錄".
 3. Create a Google Apps Script on [Google Drive](https://drive.google.com) & deploy it
-  '''
+'''GS
   function doPost(e) {
     var CHANNEL_ACCESS_TOKEN = '*LineBot's channel access token*';
     var msg = JSON.parse(e.postData.contents);
@@ -83,4 +83,4 @@
     });
 
   }//doPost(e)
-  '''
+'''
