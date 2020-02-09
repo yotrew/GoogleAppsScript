@@ -3,6 +3,8 @@
 Fix:
 1. The amount of mask is more to list first 
 2. Replace all "臺" to "台" in address field
+3. Search 全台(less 15 records)
+
 
 1. Create a Line Bot on [LineDeveloper web ](https://developers.line.biz/zh-hant/)
 2. Spreadsheet on [Google Drive](https://drive.google.com)
@@ -73,7 +75,7 @@ function doPost(e) {
   data=mask_sheet.getRange(1, 1, mask_LastRow, 7).getValues();
   
   for(var i=1;i<mask_LastRow;i++){
-    if(data[i][2].indexOf(county)>-1){
+    if(data[i][2].indexOf(county)>-1 || county=="全台"){
       replyMessage+=data[i][1]+"\n";
       replyMessage+="成人口罩量:"+data[i][4]+"\n兒童口罩量:"+data[i][5]+"\n";
       replyMessage+=data[i][2]+"\n"+data[i][3]+"\n更新時間:"+getDateTime(data[i][6])+"\n\n";
@@ -87,9 +89,9 @@ function doPost(e) {
       break;
   }
   if(replyMessage===""){
-     replyMessage="找不到任何資料!!!\n請輸入[縣市]或是[縣市,鄉鎮區]\n如:\n高雄市\n高雄市新興區";
+     replyMessage="找不到任何資料!!!\n請輸入[縣市]或是[縣市,鄉鎮區]或全台\n如:\n高雄市\n高雄市新興區\n全台\n";
   }else{
-     replyMessage+="查詢方式 [縣市]或是[縣市,鄉鎮區]\n如:\n高雄市\n高雄市新興區\n";
+     replyMessage+="查詢方式 [縣市]或是[縣市,鄉鎮區]或\n如:\n高雄市\n高雄市新興區\n全台\n";
   }
   record_sheet.getRange(2, 2).setValue(record_sheet.getRange(2, 2).getValue()+1);
   record_sheet.getRange(2, 3).setValue(new Date());//記錄最後存取時間
