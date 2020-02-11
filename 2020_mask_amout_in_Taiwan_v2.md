@@ -4,7 +4,7 @@ Fix:
 1. The amount of mask is more to list first 
 2. Replace all "臺" to "台" in address field
 3. Search 全台(less 15 records)
-4. new data source : https://data.nhi.gov.tw/Datasets/Download.ashx?rid=A21030000I-D50001-001&l=https://data.nhi.gov.tw/resource/mask/maskdata.csv
+4. new data source : https://data.nhi.gov.tw/Datasets/Download.ashx?rid=A21030000I-D50001-001&l=https://data.nhi.gov.tw/resource/mask/maskdata.csv (2020/02/11)
 
 
 1. Create a Line Bot on [LineDeveloper web ](https://developers.line.biz/zh-hant/)
@@ -50,7 +50,6 @@ function doPost(e) {
     var replyMessage="";
     var modified_timestamp=record_sheet.getRange(1, 2).getValue()
     var now_timestamp=new Date().getTime()
-    console.log(now_timestamp-modified_timestamp);
     if((now_timestamp-modified_timestamp)>180*1000){//Update if over 3 minutes(180*1000ms)
       var response=UrlFetchApp.fetch(s_url);
       if(response != false){
@@ -71,7 +70,7 @@ function doPost(e) {
       }
     }
     var mask_LastRow = mask_sheet.getLastRow();
-    var county="屏東縣萬丹鄉"
+    var county=userMessage.replace(/臺/g, "台")
     //var flag=0
   
     var count=0;
@@ -87,7 +86,7 @@ function doPost(e) {
         //if(flag)
           //break;
       }
-      if(count>11)
+      if(count>14)
         break;
     }
     if(replyMessage===""){
@@ -95,14 +94,14 @@ function doPost(e) {
     }else{
        replyMessage+="查詢方式 [縣市]或是[縣市,鄉鎮區]或全台\n如:\n高雄市\n高雄市新興區\n全台\n";
     }
-    //record_sheet.getRange(2, 2).setValue(record_sheet.getRange(2, 2).getValue()+1);
+    record_sheet.getRange(2, 2).setValue(record_sheet.getRange(2, 2).getValue()+1);
     record_sheet.getRange(2, 3).setValue(new Date());//記錄最後存取時間
     record_sheet.getRange(2, 4).setValue(county);//記錄最後下的指令
-    record_sheet.getRange(2, 5).setValue("");//記錄最後下的指令
-    console.log(replyMessage);
+    record_sheet.getRange(2, 5).setValue("");//記錄錯誤-設為空(不記錄)
+    //console.log(replyMessage);
   }catch (e) {
     replyMessage="發生錯誤!!";
-    record_sheet.getRange(2, 5).setValue("發生錯誤!!"+e);
+    record_sheet.getRange(2, 5).setValue("發生錯誤!!"+e);//記錄錯誤 若發生"Exception: 範圍的座標在工作表的涵蓋面積之外",代表工作表不夠,要再新增row數
     //console.log(e);
     //logMyErrors(e); // 將例外傳至例外處理機制
   }
