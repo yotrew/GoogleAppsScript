@@ -54,9 +54,9 @@ function doPost(e) {
       var response=UrlFetchApp.fetch(s_url);
       if(response != false){
         //Import csvData to Sheet, Ref:https://www.labnol.org/code/20279-import-csv-into-google-spreadsheet
-        var csvData = Utilities.parseCsv(response.getContentText(), ",");      
-        for(var j=1;j<csvData.length;j++)
-          csvData[j][2]=csvData[j][2].replace(/臺/g, "台");//replace all 臺 to 台 in address field
+        var csvData = Utilities.parseCsv(response.getContentText().replace(/臺/g, "台"), ",");      
+        //for(var j=1;j<csvData.length;j++)
+          //csvData[j][2]=csvData[j][2].replace(/臺/g, "台");//replace all 臺 to 台 in address field
         mask_sheet.clearContents();//Ref:https://developers.google.com/apps-script/reference/spreadsheet/sheet#clearContents()
         mask_sheet.getRange(1, 1, csvData.length, csvData[0].length).setValues(csvData);
         
