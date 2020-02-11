@@ -15,7 +15,7 @@
     var userID = msg.events[0].source.userId;
     var replyMessage="";
 
-    var s_url="http://data.nhi.gov.tw/Datasets/Download.ashx?rid=A21030000I-D50001-001&l=https://data.nhi.gov.tw/resource/mask/maskdata.csv";
+    var s_url="https://data.nhi.gov.tw/Datasets/Download.ashx?rid=A21030000I-D50001-001&l=https://data.nhi.gov.tw/resource/mask/maskdata.csv";
     var Spreadsheet = SpreadsheetApp.openByUrl('The url of the Spreadsheet  on Google Drive'); //此處填入Google試算表的網址
     var mask_sheet = Spreadsheet.getSheetByName("口罩");
     var record_sheet = Spreadsheet.getSheetByName("記錄");
