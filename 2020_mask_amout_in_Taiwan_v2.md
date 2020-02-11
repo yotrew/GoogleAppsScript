@@ -32,7 +32,7 @@ function getDateTime(date_f,f){
 
 function doPost(e) {
 
-  var CHANNEL_ACCESS_TOKEN ='';
+  var CHANNEL_ACCESS_TOKEN = '*LineBot's channel access token*';
   var msg = JSON.parse(e.postData.contents);
   console.log(msg);
   // 取出 replayToken 和發送的訊息文字
@@ -43,7 +43,8 @@ function doPost(e) {
  
   try{
     var s_url="https://data.nhi.gov.tw/Datasets/Download.ashx?rid=A21030000I-D50001-001&l=https://data.nhi.gov.tw/resource/mask/maskdata.csv";
-    var Spreadsheet = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/xxxxxxxxxxx/edit#gid=0'); //此處填入Google試算表的網址
+    var Spreadsheet = SpreadsheetApp.openByUrl('The url of the Spreadsheet  on Google Drive'); //此處填入Google試算表的網址
+    
     var mask_sheet = Spreadsheet.getSheetByName("口罩");
     var record_sheet = Spreadsheet.getSheetByName("記錄");
     var replyMessage="";
