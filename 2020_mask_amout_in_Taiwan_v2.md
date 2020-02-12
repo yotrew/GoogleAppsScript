@@ -5,6 +5,7 @@ Fix:
 2. Replace all "臺" to "台" in address field
 3. Search 全台(less 15 records)
 4. new data source : https://data.nhi.gov.tw/Datasets/Download.ashx?rid=A21030000I-D50001-001&l=https://data.nhi.gov.tw/resource/mask/maskdata.csv (2020/02/11)
+5. Add a lock mechanism to avoid  the problem during updating simultaneously (2020/02/12)
 
 
 1. Create a Line Bot on [LineDeveloper web ](https://developers.line.biz/zh-hant/)
@@ -51,6 +52,7 @@ function doPost(e) {
     var modified_timestamp=record_sheet.getRange(1, 2).getValue()
     var now_timestamp=new Date().getTime()
     if((now_timestamp-modified_timestamp)>180*1000){//Update if over 3 minutes(180*1000ms)
+      record_sheet.getRange(1, 2).setValue(new Date().getTime()) //一啟動更新就設定更新時間欄位,主要是要將table lock住,不然同時2個人更新會出問題
       var response=UrlFetchApp.fetch(s_url);
       if(response != false){
         //Import csvData to Sheet, Ref:https://www.labnol.org/code/20279-import-csv-into-google-spreadsheet
@@ -65,7 +67,7 @@ function doPost(e) {
         //對[成人口罩數量]倒排序:這樣資料列出時會先列剩餘口罩最多的
         mask_sheet.getRange(2, 1, mask_sheet.getLastRow(), mask_sheet.getLastColumn()).sort([{column: 5,ascending: false }] );
         //Logger.log(csvData.length)
-        record_sheet.getRange(1, 2).setValue(new Date().getTime())
+        //record_sheet.getRange(1, 2).setValue(new Date().getTime())
         console.log("更新資料");
       }
     }
