@@ -67,8 +67,8 @@ function doPost(e) {
         //對[成人口罩數量]倒排序:這樣資料列出時會先列剩餘口罩最多的
         mask_sheet.getRange(2, 1, mask_sheet.getLastRow(), mask_sheet.getLastColumn()).sort([{column: 5,ascending: false }] );
         //Logger.log(csvData.length)
-        //record_sheet.getRange(1, 2).setValue(new Date().getTime())
-        console.log("更新資料");
+        record_sheet.getRange(1, 2).setValue(new Date().getTime());
+        //console.log("更新資料");
       }
     }
     var mask_LastRow = mask_sheet.getLastRow();
