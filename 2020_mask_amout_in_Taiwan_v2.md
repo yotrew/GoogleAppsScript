@@ -44,68 +44,69 @@ function doPost(e) {
  
   try{
     var s_url="https://data.nhi.gov.tw/Datasets/Download.ashx?rid=A21030000I-D50001-001&l=https://data.nhi.gov.tw/resource/mask/maskdata.csv";
-    var Spreadsheet = SpreadsheetApp.openByUrl('The url of the Spreadsheet  on Google Drive'); //此處填入Google試算表的網址
-    
+    var Spreadsheet = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1fXZbbEtHt29f8KQDc1zzA0GxVWXeTfqwxk1mAGOkHtI/edit#gid=0'); //此處填入Google試算表的網址
     var mask_sheet = Spreadsheet.getSheetByName("口罩");
     var record_sheet = Spreadsheet.getSheetByName("記錄");
     var replyMessage="";
     var modified_timestamp=record_sheet.getRange(1, 2).getValue()
     var now_timestamp=new Date().getTime()
+
     if((now_timestamp-modified_timestamp)>180*1000){//Update if over 3 minutes(180*1000ms)
-      record_sheet.getRange(1, 2).setValue(new Date().getTime()) //一啟動更新就設定更新時間欄位,主要是要將table lock住,不然同時2個人更新會出問題
-      var response=UrlFetchApp.fetch(s_url);
-      if(response != false){
-        //Import csvData to Sheet, Ref:https://www.labnol.org/code/20279-import-csv-into-google-spreadsheet
-        var csvData = Utilities.parseCsv(response.getContentText().replace(/臺/g, "台"), ",");      
-        //for(var j=1;j<csvData.length;j++)
-          //csvData[j][2]=csvData[j][2].replace(/臺/g, "台");//replace all 臺 to 台 in address field
-        mask_sheet.clearContents();//Ref:https://developers.google.com/apps-script/reference/spreadsheet/sheet#clearContents()
-        mask_sheet.getRange(1, 1, csvData.length, csvData[0].length).setValues(csvData);
-        
-        //無法排出我想要的順序:先對[縣市-鄕鎮區]排後,再對[成人口罩數量排序],要解決此問題,需將地址切成3個欄位,[縣市,鄉鎮區,剩餘地址]
-        //mask_sheet.getRange(2, 1, mask_sheet.getLastRow(), mask_sheet.getLastColumn()).sort([{ column : 3,ascending: true },{column: 5,ascending: false }] );
-        //對[成人口罩數量]倒排序:這樣資料列出時會先列剩餘口罩最多的
-        mask_sheet.getRange(2, 1, mask_sheet.getLastRow(), mask_sheet.getLastColumn()).sort([{column: 5,ascending: false }] );
-        //Logger.log(csvData.length)
-        record_sheet.getRange(1, 2).setValue(new Date().getTime());
-        //console.log("更新資料");
+        var lock = LockService.getScriptLock();
+        lock.waitLock(20000); // Lock 20 second,Ref:https://www.wfublog.com/2017/03/google-apps-script-spreadsheet-delay-write-data.html
+
+        var response=UrlFetchApp.fetch(s_url);
+        if(response != false){
+          //Import csvData to Sheet, Ref:https://www.labnol.org/code/20279-import-csv-into-google-spreadsheet
+          var csvData = Utilities.parseCsv(response.getContentText().replace(/臺/g, "台").replace(/０/g, "0").replace(/１/g, "1").replace(/２/g, "2").replace(/３/g, "3").replace(/４/g, "4").replace(/５/g, "5").replace(/６/g, "6").replace(/７/g, "7").replace(/８/g, "8").replace(/９/g, "9"), ",");      
+          //for(var j=1;j<csvData.length;j++)
+            //csvData[j][2]=csvData[j][2].replace(/臺/g, "台");//replace all 臺 to 台 in address field
+          mask_sheet.clearContents();//Ref:https://developers.google.com/apps-script/reference/spreadsheet/sheet#clearContents()
+          mask_sheet.clearContents();//Ref:https://developers.google.com/apps-script/reference/spreadsheet/sheet#clearContents()
+          mask_sheet.getRange(1, 1, csvData.length, csvData[0].length).setValues(csvData);
+          
+          //無法排出我想要的順序:先對[縣市-鄕鎮區]排後,再對[成人口罩數量排序],要解決此問題,需將地址切成3個欄位,[縣市,鄉鎮區,剩餘地址]
+          //mask_sheet.getRange(2, 1, mask_sheet.getLastRow(), mask_sheet.getLastColumn()).sort([{ column : 3,ascending: true },{column: 5,ascending: false }] );
+          //對[成人口罩數量]倒排序:這樣資料列出時會先列剩餘口罩最多的
+          mask_sheet.getRange(2, 1, mask_sheet.getLastRow(), mask_sheet.getLastColumn()).sort([{column: 5,ascending: false }] );
+          //Logger.log(csvData.length)
+          record_sheet.getRange(1, 2).setValue(new Date().getTime());
+          lock.releaseLock(); 
+        }
       }
-    }
-    var mask_LastRow = mask_sheet.getLastRow();
-    var county=userMessage.replace(/臺/g, "台")
-    //var flag=0
-  
-    var count=0;
-    data=mask_sheet.getRange(1, 1, mask_LastRow, 7).getValues();
-    for(var i=1;i<mask_LastRow;i++){
-      if(data[i][2].indexOf(county)>-1 || county=="全台"){
-        replyMessage+=data[i][1]+"\n";
-        replyMessage+="成人口罩量:"+data[i][4]+"\n兒童口罩量:"+data[i][5]+"\n";
-        replyMessage+=data[i][2]+"\n"+data[i][3]+"\n更新時間:"+getDateTime(data[i][6])+"\n\n";
-        count++;
-        //flag=1;
+      var mask_LastRow = mask_sheet.getLastRow();
+      var county=userMessage.replace(/臺/g, "台")
+      //var flag=0
+    
+      var count=0;
+      data=mask_sheet.getRange(1, 1, mask_LastRow, 7).getValues();
+      for(var i=1;i<mask_LastRow;i++){
+        if(data[i][2].indexOf(county)>-1 || county=="全台"){
+          replyMessage+=data[i][1]+"\n";
+          replyMessage+="成人口罩量:"+data[i][4]+"\n兒童口罩量:"+data[i][5]+"\n";
+          replyMessage+=data[i][2]+"\n"+data[i][3]+"\n更新時間:"+getDateTime(data[i][6])+"\n\n";
+          count++;
+          //flag=1;
+        }else{
+          //if(flag)
+            //break;
+        }
+        if(count>14)
+          break;
+      }
+      if(replyMessage===""){
+         replyMessage="找不到任何資料!!!\n請輸入[縣市]或是[縣市,鄉鎮區]或全台\n如:\n高雄市\n高雄市新興區\n全台\n";
       }else{
-        //if(flag)
-          //break;
+         replyMessage+="查詢方式 [縣市]或是[縣市,鄉鎮區]或全台\n如:\n高雄市\n高雄市新興區\n全台\n";
       }
-      if(count>14)
-        break;
-    }
-    if(replyMessage===""){
-       replyMessage="找不到任何資料!!!\n請輸入[縣市]或是[縣市,鄉鎮區]或全台\n如:\n高雄市\n高雄市新興區\n全台\n";
-    }else{
-       replyMessage+="查詢方式 [縣市]或是[縣市,鄉鎮區]或全台\n如:\n高雄市\n高雄市新興區\n全台\n";
-    }
-    record_sheet.getRange(2, 2).setValue(record_sheet.getRange(2, 2).getValue()+1);
-    record_sheet.getRange(2, 3).setValue(new Date());//記錄最後存取時間
-    record_sheet.getRange(2, 4).setValue(county);//記錄最後下的指令
-    record_sheet.getRange(2, 5).setValue("");//記錄錯誤-設為空(不記錄)
-    //console.log(replyMessage);
+      record_sheet.getRange(2, 2).setValue(record_sheet.getRange(2, 2).getValue()+1);
+      record_sheet.getRange(2, 3).setValue(new Date());//記錄最後存取時間
+      record_sheet.getRange(2, 4).setValue(county);//記錄最後下的指令
+      record_sheet.getRange(2, 5).setValue("");//記錄錯誤-設為空(不記錄)
+
   }catch (e) {
     replyMessage="發生錯誤!!";
     record_sheet.getRange(2, 5).setValue("發生錯誤!!"+e);//記錄錯誤 若發生"Exception: 範圍的座標在工作表的涵蓋面積之外",代表工作表不夠,要再新增row數
-    //console.log(e);
-    //logMyErrors(e); // 將例外傳至例外處理機制
   }
   
  
