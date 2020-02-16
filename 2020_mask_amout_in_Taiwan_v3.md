@@ -1,4 +1,4 @@
-## Linebot-GAS Query The amount of mask in Taiwan , Version 2
+## Linebot-GAS Query The amount of mask in Taiwan , Version 3
 
 Fix:
 1. The amount of mask is more to list first 
@@ -79,7 +79,8 @@ function doPost(e) {
             }
           }
           if(j>=mask_LastRow){//這是新資料
-            data.push(csvData[i]);
+            //data.push(csvData[i]);
+	    data[mask_LastRow]=csvData[i];
             //console.log("old data["+mask_LastRow+"]"+data[mask_LastRow-1]);
             mask_LastRow++;
             //console.log("new data["+mask_LastRow+"]"+data[mask_LastRow-1]);
